@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using NivelModele;
+using NivelStocareDate;
 
-namespace Restaurant
+namespace ConsoleApp
 {
     class Program
     {
         static void Main()
         {
-            List<Comanda> comenzi = new List<Comanda>();
-            string optiune;
+            AdministrareComenzi_Memorie adminMemorie = new AdministrareComenzi_Memorie();
+            AdministrareComenzi_Fisier adminFisier = new AdministrareComenzi_Fisier("comenzi.txt");
 
+            string optiune;
             do
             {
-                Console.WriteLine("C. Creare comanda");
-                Console.WriteLine("A. Afisare comenzi");
-                Console.WriteLine("F. Cautare comanda după ID");
-                Console.WriteLine("X. Iesire");
+                Console.WriteLine("\nMeniu:");
+                Console.WriteLine("C - Creare comanda");
+                Console.WriteLine("A - Afisare comenzi din memorie");
+                Console.WriteLine("F - Afisare comenzi din fisier");
+                Console.WriteLine("X - Iesire");
                 Console.Write("Alegeti o optiune: ");
                 optiune = Console.ReadLine().ToUpper();
 
@@ -23,25 +27,25 @@ namespace Restaurant
                 {
                     case "C":
                         Comanda nouaComanda = CitireComandaTastatura();
-                        comenzi.Add(nouaComanda);
-                        Console.WriteLine("Comanda a fost adaugata!");
+                        adminMemorie.AddComanda(nouaComanda);
+                        adminFisier.AddComanda(nouaComanda);
+                        Console.WriteLine("Comanda a fost salvata!");
                         break;
 
                     case "A":
-                        AfisareComenzi(comenzi);
+                        AfisareComenzi(adminMemorie.GetComenzi());
                         break;
 
                     case "F":
-                        Console.Write("Introduceti ID-ul comenzii: ");
-                        int idCautat = int.Parse(Console.ReadLine());
-                        CautareComanda(comenzi, idCautat);
+                        List<Comanda> comenziDinFisier = adminFisier.GetComenzi();
+                        AfisareComenzi(comenziDinFisier);
                         break;
 
                     case "X":
                         return;
 
                     default:
-                        Console.WriteLine("Optoine invalida!");
+                        Console.WriteLine("Optiune invalida!");
                         break;
                 }
             } while (optiune != "X");
@@ -49,7 +53,7 @@ namespace Restaurant
 
         public static Comanda CitireComandaTastatura()
         {
-            Console.Write("Introducei ID-ul comenzii: ");
+            Console.Write("Introduceti ID-ul comenzii: ");
             int id = int.Parse(Console.ReadLine());
             Comanda comanda = new Comanda(id);
 
@@ -73,22 +77,17 @@ namespace Restaurant
 
         public static void AfisareComenzi(List<Comanda> comenzi)
         {
-            foreach (var comanda in comenzi)
+            if (comenzi.Count == 0)
             {
-                Console.WriteLine(comanda.Info());
-            }
-        }
-
-        public static void CautareComanda(List<Comanda> comenzi, int id)
-        {
-            Comanda gasita = comenzi.Find(c => c.Id == id);
-            if (gasita != null)
-            {
-                Console.WriteLine("Comanda gasita: " + gasita.Info());
+                Console.WriteLine("Nu exista comenzi salvate.");
             }
             else
             {
-                Console.WriteLine("Comanda nu a fost gasita.");
+                Console.WriteLine("\nComenzi salvate:");
+                foreach (var comanda in comenzi)
+                {
+                    Console.WriteLine(comanda);
+                }
             }
         }
     }

@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Restaurant
+namespace NivelModele
 {
     public class Comanda
     {
         public int Id { get; set; }
         public List<Produs> Produse { get; set; } = new List<Produs>();
-        public double Total => CalculeazaTotal();
+        public double Total => Produse.Sum(p => p.Pret);
+
+        public Comanda() { }
 
         public Comanda(int id)
         {
@@ -18,17 +22,7 @@ namespace Restaurant
             Produse.Add(produs);
         }
 
-        private double CalculeazaTotal()
-        {
-            double suma = 0;
-            foreach (var produs in Produse)
-            {
-                suma += produs.Pret;
-            }
-            return suma;
-        }
-
-        public string Info()
+        public override string ToString()
         {
             string produseInfo = string.Join(", ", Produse);
             return $"Comanda #{Id}: {produseInfo} | Total: {Total} RON";
