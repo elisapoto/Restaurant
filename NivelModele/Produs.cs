@@ -2,13 +2,13 @@
 {
     public class Produs
     {
-        public string Nume { get; set; }
-        public double Pret { get; set; }
-        public string Categorie { get; set; }
+        public string Nume { get;  }
+        public double Pret { get; }
+        public CategorieProdus Categorie { get; }
 
         public Produs() { }
 
-        public Produs(string nume, double pret, string categorie)
+        public Produs(string nume, double pret, CategorieProdus categorie)
         {
             Nume = nume;
             Pret = pret;

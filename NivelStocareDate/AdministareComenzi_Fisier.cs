@@ -41,14 +41,18 @@ namespace NivelStocareDate
                 {
                     string[] valori = linie.Split(';');
 
-                    if (valori.Length == 4) // ID, Nume, Pret, Categorie
+                    if (valori.Length == 4) 
                     {
                         int id = int.Parse(valori[0]);
                         string nume = valori[1];
                         double pret = double.Parse(valori[2]);
-                        string categorie = valori[3];
 
-                        Produs produs = new Produs(nume, pret, categorie);
+                        if (!Enum.TryParse(valori[3], out CategorieProdus categorieProdus))
+                        {
+                            categorieProdus = CategorieProdus.alte; 
+                        }
+
+                        Produs produs = new Produs(nume, pret, categorieProdus);
 
                         if (!comenziTemp.ContainsKey(id))
                         {

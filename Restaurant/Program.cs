@@ -65,10 +65,21 @@ namespace ConsoleApp
 
                 Console.Write("Introduceti pretul produsului: ");
                 double pret = double.Parse(Console.ReadLine());
-                Console.Write("Introduceti categoria produsului: ");
-                string categorie = Console.ReadLine();
+                Console.WriteLine("Selectati categoria produsului:");
+                foreach (var categorie in Enum.GetValues(typeof(CategorieProdus)))
+                {
+                    Console.WriteLine($"- {categorie}");
+                }
+                Console.Write("Categorie: ");
+                string inputCategorie = Console.ReadLine();
 
-                Produs produs = new Produs(nume, pret, categorie);
+                if (!Enum.TryParse(inputCategorie, true, out CategorieProdus categorieProdus))
+                {
+                    Console.WriteLine("Categorie invalida, setata automat pe 'Alte'.");
+                    categorieProdus = CategorieProdus.alte;
+                }
+
+                Produs produs = new Produs(nume, pret, categorieProdus);
                 comanda.AdaugaProdus(produs);
             }
 
