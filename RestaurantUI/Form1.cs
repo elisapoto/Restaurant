@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using NivelStocareDate;
 using NvlModele;
-using Nvlstocaredate;
 
 namespace RestaurantUI
 {
@@ -28,11 +27,36 @@ namespace RestaurantUI
         private void AfiseazaComenzi()
         {
             lstComenzi.Items.Clear();
-            var comenzi = adminComenzi.GetAllComenzi();
+            var comenzi = adminComenzi.GetComenzi();
 
             foreach (var comanda in comenzi)
             {
-                lstComenzi.Items.Add($"Comanda #{comanda.Id} - {comanda.Produse.Count} produse");
+                lstComenzi.Items.Add(comanda.ToString());
+            }
+        }
+
+        private void btnCautaId_Click(object sender, EventArgs e)
+        {
+            if (int.TryParse(txtCautaId.Text, out int id))
+            {
+                Comanda comandaGasita = adminComenzi.GetComandaById(id);
+
+                if (comandaGasita != null)
+                {
+                    lstComenzi.Items.Clear();
+                    lstComenzi.Items.Add(comandaGasita.ToString());
+                    lstComenzi.SelectedIndex = 0;
+                }
+                else
+                {
+                    MessageBox.Show($"Comanda cu ID-ul {id} nu a fost găsită.", "Căutare",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Introduceți un ID valid (număr întreg).", "Eroare",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -40,7 +64,7 @@ namespace RestaurantUI
         {
             if (comandaCurenta == null)
             {
-                comandaCurenta = new Comanda(GetNextComandaId());
+                comandaCurenta = new Comanda(adminComenzi.GetNextComandaId());
             }
 
             if (!ValideazaProdus())
@@ -55,9 +79,9 @@ namespace RestaurantUI
             comandaCurenta.AdaugaProdus(produs);
             MessageBox.Show("Produs adăugat la comandă!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            // Reset form pentru a adăuga alt produs
             txtNumeProdus.Clear();
             txtPretProdus.Clear();
+            txtNumeProdus.Focus();
         }
 
         private void btnFinalizareComanda_Click(object sender, EventArgs e)
@@ -65,7 +89,7 @@ namespace RestaurantUI
             if (comandaCurenta != null && comandaCurenta.Produse.Count > 0)
             {
                 adminComenzi.AddComanda(comandaCurenta);
-                comandaCurenta = null;  // Resetăm comanda curentă
+                comandaCurenta = null;
                 AfiseazaComenzi();
                 MessageBox.Show("Comanda a fost finalizată și salvată!", "Succes", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -77,7 +101,8 @@ namespace RestaurantUI
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            AfiseazaComenzi();  // Reîncarcă lista de comenzi
+            txtCautaId.Clear();
+            AfiseazaComenzi();
         }
 
         private bool ValideazaProdus()
@@ -90,16 +115,11 @@ namespace RestaurantUI
 
             if (!double.TryParse(txtPretProdus.Text, out double pret) || pret <= 0)
             {
-                MessageBox.Show("Preț invalid! Introduceți o valoare validă.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Preț invalid! Introduceți o valoare pozitivă.", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
             return true;
-        }
-
-        private int GetNextComandaId()
-        {
-            return adminComenzi.GetAllComenzi().Count + 1;  // Obținem ID-ul următoarei comenzi
         }
     }
 }

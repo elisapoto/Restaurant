@@ -1,9 +1,10 @@
-﻿using NvlModele;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
+using System.Linq;
+using NvlModele;
 
-namespace Nvlstocaredate
+namespace NivelStocareDate
 {
     public class AdministrareComenzi_Fisier
     {
@@ -18,7 +19,6 @@ namespace Nvlstocaredate
             }
         }
 
-        // Metodă pentru adăugarea unei comenzi în fișier
         public void AddComanda(Comanda comanda)
         {
             using (StreamWriter sw = new StreamWriter(numeFisier, true))
@@ -30,8 +30,7 @@ namespace Nvlstocaredate
             }
         }
 
-        // Metodă pentru obținerea tuturor comenzilor din fișier
-        public List<Comanda> GetAllComenzi()
+        public List<Comanda> GetComenzi()
         {
             List<Comanda> comenzi = new List<Comanda>();
             Dictionary<int, Comanda> comenziTemp = new Dictionary<int, Comanda>();
@@ -68,6 +67,21 @@ namespace Nvlstocaredate
 
             comenzi.AddRange(comenziTemp.Values);
             return comenzi;
+        }
+
+        public Comanda GetComandaById(int id)
+        {
+            return GetComenzi().FirstOrDefault(c => c.Id == id);
+        }
+
+        public int GetNextComandaId()
+        {
+            var comenzi = GetComenzi();
+            if (comenzi.Count == 0)
+            {
+                return 1;
+            }
+            return comenzi.Max(c => c.Id) + 1;
         }
     }
 }
